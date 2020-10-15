@@ -9,13 +9,13 @@
 #include <GLFW/glfw3.h>
 #include "shared/file_utils.h"
 #include "shared/math_utils.h"
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+// #include <glm/glm.hpp>
+// #include <glm/gtx/transform.hpp>
+// #include <glm/gtc/matrix_transform.hpp>
 
 float rotation = 0.0f;
 
-#include "./common/perspective.hpp"
+// #include "./common/perspective.hpp"
 
 GLFWwindow *window; // (In the accompanying source code, this variable is global for simplicity)
 GLuint vertexArray, vertexBuffer;
@@ -23,6 +23,8 @@ GLuint colorbuffer;
 
 GLuint gWorldLocation;
 GLuint MatrixID;
+
+Matrix4f World;
 
 const char *pVSFileName = "shader.vs";
 const char *pFSFileName = "shader.fs";
@@ -146,6 +148,52 @@ static void createVertexBuffer()
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 }
 
+static void onDisplay()
+{
+
+    World.m[0][0] = cosf(rotation);
+    World.m[0][1] = -sinf(rotation);
+    World.m[0][2] = 0.0f;
+    World.m[0][3] = 0.0f;
+    World.m[1][0] = sinf(rotation);
+    World.m[1][1] = cosf(rotation);
+    World.m[1][2] = 0.0f;
+    World.m[1][3] = 0.0f;
+    World.m[2][0] = 0.0f;
+    World.m[2][1] = 0.0f;
+    World.m[2][2] = 1.0f;
+    World.m[2][3] = 0.0f;
+    World.m[3][0] = 0.0f;
+    World.m[3][1] = 0.0f;
+    World.m[3][2] = 0.0f;
+    World.m[3][3] = 1.0f;
+
+    // World.m[0][0] = 1.0f;
+    // World.m[0][1] = 0.0f;
+    // World.m[0][2] = 0.0f;
+    // World.m[0][3] = 0.0f;
+    // World.m[1][0] = 0.0f;
+    // World.m[1][1] = sinf(rotation);
+    // World.m[1][2] = 0.0f;
+    // World.m[1][3] = 0.0f;
+    // World.m[2][0] = 0.0f;
+    // World.m[2][1] = 0.0f;
+    // World.m[2][2] = sinf(rotation);
+    // World.m[2][3] = 0.0f;
+    // World.m[3][0] = 0.0f;
+    // World.m[3][1] = 0.0f;
+    // World.m[3][2] = 0.0f;
+    // World.m[3][3] = 1.0f;
+
+    glUniformMatrix4fv(MatrixID, 1, GL_TRUE, &World.m[0][0]);
+
+    GLenum errorCode = glGetError();
+    if (errorCode != GL_NO_ERROR)
+    {
+        fprintf(stderr, "OpenGL rendering error %d\n", errorCode);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     if (!glfwInit())
@@ -171,8 +219,8 @@ int main(int argc, char *argv[])
     printf("GL version: %s\n", glGetString(GL_VERSION));
     createVertexBuffer();
     compileShaders();
-    glm::mat4 mvp = transform();
-    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
+    // glm::mat4 mvp = transform();
+    // glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
@@ -204,6 +252,8 @@ int main(int argc, char *argv[])
         );
         // Draw the triangle !
         //glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+        onDisplay();
+
         glDrawArrays(GL_TRIANGLES, 0, 12 * 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
 
         glDisableVertexAttribArray(0);
