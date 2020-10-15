@@ -49,23 +49,10 @@ static void createVertexBuffer()
 {
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
-    //! This approach uses extra vertices so will require more memory
-    // static const GLfloat g_vertex_buffer_data[] = {
-    //     -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, // Top-left
-    //     0.5f, 0.5f, 0.0f, 1.0f, 0.0f,  // Top-right
-    //     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // Bottom-right
-
-    //     0.5f, -0.5f, 0.0f, 0.0f, 1.0f,  // Bottom-right
-    //     -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, // Bottom-left
-    //     -0.5f, 0.5f, 1.0f, 0.0f, 0.0f   // Top-left
-    // };
-    //! This approach reuses common vertices
     static const GLfloat g_vertex_buffer_data[] = {
-        -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, // Top-left
-        0.5f, 0.5f, 0.0f, 1.0f, 0.0f,  // Top-right
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // Bottom-right
-        -0.5f, -0.5f, 1.0f, 1.0f, 1.0f // Bottom-left
-    };
+        0.0f, 0.5f, 1.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f};
 
     // Generate 1 buffer, put the resulting identifier in vertexbuffer
     glGenBuffers(1, &vertexBuffer);
@@ -75,8 +62,7 @@ static void createVertexBuffer()
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
     GLuint elements[] = {
-        0, 1, 2,
-        2, 3, 0};
+        0, 1, 2};
     glGenBuffers(1, &elementBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
@@ -128,8 +114,7 @@ int main(int argc, char *argv[])
         glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
