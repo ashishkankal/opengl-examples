@@ -3,42 +3,34 @@
 #include <fstream>
 #include <string.h>
 #include <stdlib.h>
-#include <string>
 #include <GL/glew.h>
 #include <GLUT/glut.h>
 #include <GLFW/glfw3.h>
-#include "file_utils.h"
-#include "math_utils.h"
+#include "shared/file_utils.h"
+#include "shared/math_utils.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-glm::mat4 Projection = glm::perspective(glm::radians(30.0f), (float)100 / (float)100, 0.1f, 100.0f);
+float rotation = 0.0f;
+const char *offFile = "/Users/ashishkankal/technical/learngl/m399.off";
+#include "./common/offObject.hpp"
 
-//Ortho view
-//glm::mat4 Projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 100.0f); // In world coordinates
+OffObject off;
 
-glm::mat4 View = glm::lookAt(
-    glm::vec3(4, 3, 3), // Camera is at (4,3,3), in World Space
-    glm::vec3(0, 0, 0), // and looks at the origin
-    glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
-);
-glm::mat4 Model = glm::mat4(1.0f);
-glm::mat4 mvp = Projection * View * Model; // Remember, matrix multiplication is the other way around
+#include "./common/perspective.hpp"
 
 GLFWwindow *window; // (In the accompanying source code, this variable is global for simplicity)
 GLuint vertexArray, vertexBuffer;
+GLuint colorbuffer;
+
 GLuint gWorldLocation;
 GLuint MatrixID;
 
-float rotation = 0.0f;
+const char *pVSFileName = "shader.vs";
+const char *pFSFileName = "shader.fs";
 
 #include "./common/shader.hpp"
-
-glm::mat4 myMatrix;
-glm::vec4 myVector;
-// fill myMatrix and myVector somehow
-glm::vec4 transformedVector = myMatrix * myVector;
 
 static void createWindow()
 {
@@ -68,6 +60,7 @@ static void createVertexBuffer()
         1.0f,
         0.0f,
     };
+
     // Generate 1 buffer, put the resulting identifier in vertexbuffer
     glGenBuffers(1, &vertexBuffer);
     // The following commands will talk about our 'vertexbuffer' buffer
@@ -78,6 +71,7 @@ static void createVertexBuffer()
 
 int main(int argc, char *argv[])
 {
+
     if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW\n");
@@ -101,13 +95,17 @@ int main(int argc, char *argv[])
     printf("GL version: %s\n", glGetString(GL_VERSION));
     createVertexBuffer();
     compileShaders();
+    glm::mat4 mvp = transform();
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     do
     {
+        rotation += 0.01;
         // // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
         glVertexAttribPointer(
@@ -118,8 +116,8 @@ int main(int argc, char *argv[])
             0,        // stride
             (void *)0 // array buffer offset
         );
-        // Draw the triangle !
         glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+
         glDisableVertexAttribArray(0);
         glfwSwapBuffers(window);
         glfwPollEvents();

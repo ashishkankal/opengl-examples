@@ -1,9 +1,9 @@
-CC = g++
+CC = g++ -std=c++11 -stdlib=libc++
 RM = /bin/rm -rf
 
 CFLAGS = -O3 -Wall
 
-INCDIRS = -I . /usr/local/include
+INCDIRS = -I .. /usr/local/include 
 LIBDIRS = -L.
 LIBS = -framework OpenGL -lglew -lglfw -lm
 
