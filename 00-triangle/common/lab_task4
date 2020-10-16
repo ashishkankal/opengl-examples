@@ -1,0 +1,28 @@
+    
+    give the cooridinates as per aspect ratio width/height
+    static const GLfloat g_vertex_buffer_data[] = {
+        -1.33f,
+        -1.33f,
+        0.0f,
+        //
+        1.33f,
+        -1.33f,
+        0.0f,
+        //
+        1.33f,
+        1.33f,
+        0.0f,
+        //Second Triangle
+        1.33f,
+        1.33f,
+        0.0f,
+        //
+        -1.33f,
+        -1.33f,
+        0.0f, //
+
+        -1.33f,
+        1.33f,
+        0.0f, //
+
+    };
