@@ -57,19 +57,19 @@ float findMod(float a, float b)
 
 glm::mat4 transform(float rotation)
 {
-    float angle = findMod((rotation * 10), 360); // 45° per second
+    glm::mat4 Projection = glm::perspective(glm::radians(60.0f), 1.0f * screen_width / screen_height, 0.1f, 10.0f);
 
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 1.0f * screen_width / screen_height, 0.1f, 10.0f);
+    glm::mat4 Scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.673333, 0.673333, 0.673333));
 
-    glm::mat4 Scale = glm::scale(glm::mat4(1.0f), glm::vec3(2.0, 2.0, 2.0));
+    glm::mat4 Model = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5.0));
 
-    glm::mat4 Model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.2, 0, -5.0));
+    glm::mat4 View = glm::lookAt(glm::vec3(0.0, 2.0, 0.0), glm::vec3(0.0, 0.0, -4.0), glm::vec3(0.0, 1.0, 0.0));
 
-    glm::mat4 View = glm::lookAt(glm::vec3(1.2, 0.8, -9), glm::vec3(0.300007, 0.175135, 0.501496), glm::vec3(0.0, 1.0, 0.0));
+    float angle = findMod((rotation * 100), 360); // 45° per second
 
-    glm::vec3 axis(0, 1, 0);
+    glm::vec3 axis_y(0, 1, 0);
 
-    glm::mat4 anim = glm::rotate(glm::mat4(1.0f), glm::radians(355.0f), axis);
+    glm::mat4 anim = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis_y);
 
     return Projection * View * Model * Scale * anim; // Remember, matrix multiplication is the other way around
 }

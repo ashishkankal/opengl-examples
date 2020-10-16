@@ -65,21 +65,24 @@ static void createWindow()
 
 static void createVertexBuffer()
 {
-    float vertices[] = {
-        0.5f, 0.5f, 0.0f,   // top right
-        0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f, // bottom left
-        -0.5f, 0.5f, 0.0f   // top left
-    };
-    unsigned int indices[] = {
-        // note that we start from 0!
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
+    vector<Vector3f> Vertices;
+    Vertices.push_back(Vector3f(0.5f, 0.5f, 0.0f));
+    Vertices.push_back(Vector3f(0.5f, -0.5f, 0.0f));
+    Vertices.push_back(Vector3f(-0.5f, -0.5f, 0.0f));
+    Vertices.push_back(Vector3f(-0.5f, 0.5f, 0.0f));
+
+    vector<Vector3i> Indices;
+
+    Indices.push_back(Vector3i(0, 1, 3));
+    Indices.push_back(Vector3i(1, 2, 3));
+
+    struct Shape *ptr;
+    ptr = &shape;
     glGenBuffers(1, &elementBuffer);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.edges.size() * sizeof(Vector3i), &shape.edges.front(), GL_STATIC_DRAW);
+
     glGenVertexArrays(1, &vertexArray);
     // Generate 1 buffer, put the resulting identifier in vertexbuffer
     glGenBuffers(1, &vertexBuffer);
@@ -88,7 +91,7 @@ static void createVertexBuffer()
 
     // The following commands will talk about our 'vertexbuffer' buffer
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    // Give our vertices to OpenGL.
+
     glBufferData(GL_ARRAY_BUFFER, shape.vertices.size() * sizeof(Vector3f), &shape.vertices.front(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
@@ -132,7 +135,7 @@ int main(int argc, char *argv[])
     glDepthFunc(GL_LESS);
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     do
     {
 
@@ -147,7 +150,7 @@ int main(int argc, char *argv[])
 
         // glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-        glDrawElements(GL_TRIANGLES, 13542 * 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         //glDisableVertexAttribArray(0);
         glfwSwapBuffers(window);
         glfwPollEvents();

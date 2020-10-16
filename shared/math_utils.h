@@ -147,6 +147,101 @@ struct Vector3f
 	}
 };
 
+struct Vector3i
+{
+	unsigned int x;
+	unsigned int y;
+	unsigned int z;
+
+	Vector3i()
+	{
+	}
+
+	Vector3i(unsigned int _x, unsigned int _y, unsigned int _z)
+	{
+		x = _x;
+		y = _y;
+		z = _z;
+	}
+
+	Vector3i(unsigned int f)
+	{
+		x = y = z = f;
+	}
+
+	Vector3i &operator+=(const Vector3i &r)
+	{
+		x += r.x;
+		y += r.y;
+		z += r.z;
+
+		return *this;
+	}
+
+	Vector3i &operator-=(const Vector3i &r)
+	{
+		x -= r.x;
+		y -= r.y;
+		z -= r.z;
+
+		return *this;
+	}
+
+	Vector3i &operator*=(unsigned int f)
+	{
+		x *= f;
+		y *= f;
+		z *= f;
+
+		return *this;
+	}
+
+	operator const unsigned int *() const
+	{
+		return &(x);
+	}
+
+	Vector3i Cross(const Vector3i &v) const
+	{
+		const unsigned int _x = y * v.z - z * v.y;
+		const unsigned int _y = z * v.x - x * v.z;
+		const unsigned int _z = x * v.y - y * v.x;
+
+		return Vector3i(_x, _y, _z);
+	}
+
+	Vector3i &Normalize()
+	{
+		const float Length = sqrtf(x * x + y * y + z * z);
+
+		x /= Length;
+		y /= Length;
+		z /= Length;
+
+		return *this;
+	}
+
+	unsigned int dist(const Vector3i &other)
+	{
+		unsigned int diffX = x - other.x;
+		unsigned int diffY = y - other.y;
+		unsigned int diffZ = z - other.z;
+		unsigned int Length = sqrtf(diffX * diffX + diffY * diffY + diffZ * diffZ);
+		return Length;
+	}
+
+	float length()
+	{
+		unsigned int Length = sqrtf(x * x + y * y + z * z);
+		return Length;
+	}
+
+	void Print() const
+	{
+		printf("(%u, %u, %u)", x, y, z);
+	}
+};
+
 struct Vector4f
 {
 	float x;
