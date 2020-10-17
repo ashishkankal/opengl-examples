@@ -8,7 +8,7 @@ in vec3 geo_color[];
 out vec3 Color;
 
 void main() {    
-    Color =geo_color[0];
+    Color =geo_color[2];
     gl_Position = gPos[0] + vec4(-0.75, -1.2, 0.0, 0.0); // 1:top   
     EmitVertex();
     Color =geo_color[0];

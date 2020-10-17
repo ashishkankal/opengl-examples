@@ -65,17 +65,6 @@ static void createWindow()
 
 static void createVertexBuffer()
 {
-    float vertices[] = {
-        0.5f, 0.5f, 0.0f,   // top right
-        0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f, // bottom left
-        -0.5f, 0.5f, 0.0f   // top left
-    };
-    unsigned int indices[] = {
-        // note that we start from 0!
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
     glGenBuffers(1, &elementBuffer);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
@@ -94,7 +83,7 @@ static void createVertexBuffer()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    glBindVertexArray(vertexArray);
 }
 
 int main(int argc, char *argv[])
@@ -147,7 +136,7 @@ int main(int argc, char *argv[])
 
         // glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-        glDrawElements(GL_TRIANGLES, 13542 * 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, shape.edges.size() * 3, GL_UNSIGNED_INT, 0);
         //glDisableVertexAttribArray(0);
         glfwSwapBuffers(window);
         glfwPollEvents();
