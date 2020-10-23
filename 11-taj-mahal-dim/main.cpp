@@ -8,13 +8,13 @@
 #include <GL/glew.h>
 #include <GLUT/glut.h>
 #include <GLFW/glfw3.h>
-#include "shared/file_utils.h"
-#include "shared/math_utils.h"
+#include "../shared/file_utils.h"
+#include "../shared/math_utils.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-float scale = 0.0f;
+float scale = 0.0f, fov = 90.0f;
 float loop_var = 0.0f;
 int screen_width = 1024, screen_height = 768;
 float zNear = 0.1f, zFar = 40.0f;
@@ -31,11 +31,11 @@ struct Camera
     float up_z;
     Camera()
     {
-        x = 0.19f;
+        x = 0.59f;
         y = -0.1f;
-        z = -8.39f;
+        z = -7.59f;
 
-        up_x = 0.300007;
+        up_x = 0.500007;
         up_y = 0.175135;
         up_z = 0.501496;
     }
@@ -50,9 +50,9 @@ struct Translate
     float z;
     Translate()
     {
-        x = -0.29f;
-        y = -0.5f;
-        z = -6.8f;
+        x = 0.0100001f;
+        y = -0.4f;
+        z = -6.6f;
     }
     Translate(float _x, float _y, float _z)
     {
@@ -71,9 +71,7 @@ GLuint colorbuffer;
 
 GLuint gWorldLocation;
 GLuint MatrixID;
-//Matrix4f mvp;
-
-glm::mat4 mvp;
+Matrix4f mvp;
 
 struct Shape
 {
@@ -106,6 +104,7 @@ static void createWindow()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // To make MacOS happy; should not be needed
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_CENTER_CURSOR, GL_TRUE);
 
     // Open a window and create its OpenGL context
     window = glfwCreateWindow(screen_width, screen_height, "OpenGL - Ashish", NULL, NULL);
@@ -230,6 +229,14 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     {
         rotateCo.z -= 0.10f;
     }
+    if (key == GLFW_KEY_O && action == GLFW_PRESS)
+    {
+        fov += 0.10f;
+    }
+    if (key == GLFW_KEY_P && action == GLFW_PRESS)
+    {
+        fov -= 0.10f;
+    }
 }
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos)
@@ -306,10 +313,10 @@ int main(int argc, char *argv[])
 
         // // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        glMatrixMode(GL_PROJECTION);
         glBindVertexArray(vertexArray);
         mvp = transform();
-        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
+        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp.m[0][0]);
 
         // glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);

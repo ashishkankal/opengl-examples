@@ -55,72 +55,71 @@ float findMod(float a, float b)
     return mod;
 }
 
-glm::mat4 transform()
+glm::mat4 getLookAt()
 {
-
-    float angle = findMod((loop_var * 10), 360); // 45° per second
-    int numFs = 5;
-    int radius = 0.5;
-    glm::vec3 axis(0, 1, 0);
-    // glm::mat4 cameraRotMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis);
-    // glm::vec3 cameraVec(radius * glm::cos(glm::radians(angle)), camera.y, radius * glm::sin(glm::radians(angle)));
-    // float camX = sin(glfwGetTime()) * radius;
-    // float camZ = cos(glfwGetTime()) * radius;
     glm::vec3 cameraPos(camera.x, camera.y, camera.z);
-    // glm::mat4 cameraMatrix = glm::translate(cameraRotMatrix, cameraVec);
-
-    glm::mat4 Projection = glm::perspective(glm::radians(90.0f), 1.0f * screen_width / screen_height, zNear, zFar);
-
     glm::vec3 cameraTarget(camera.up_x, camera.up_y, camera.up_z);
-
-    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-    glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-
-    // glm::mat4 View = glm::inverse(cameraMatrix * cameraRotMatrix);
-
-    glm::mat4 View = glm::lookAt(cameraPos, cameraTarget, cameraUp);
-
-    glm::mat4 ViewProjection = Projection * View;
-
-    glm::mat4 ViewProjectionModel = glm::translate(ViewProjection, glm::vec3(translate.x, translate.y, translate.z));
-
-    glm::mat4 ViewProjectionModelScale = glm::scale(ViewProjectionModel, glm::vec3(1.0, 1.0, 1.0));
-
-    glm::mat4 anim = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), axis);
-
-    return ViewProjectionModelScale * anim; // Remember, matrix multiplication is the other way around
+    //? Below Calculation is already done by look At
+    //glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);// Camera Z Axis
+    //glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));  // Camera X Axis
+    //glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);// Camera Y Axis
+    //?
+    glm::mat4 View = glm::lookAt(cameraPos, cameraTarget, up);
+    return glm::inverse(View);
+}
+glm::mat4 getPerspective()
+{
+    return glm::perspective(glm::radians(fov), 1.0f * screen_width / screen_height, zNear, zFar);
 }
 
-// Matrix4f transform()
-// {
-//     Matrix4f rotationMat;
-//     rotationMat.InitRotateTransform(rotateCo.x, rotateCo.y, rotateCo.z);
+glm::mat4 getTranslation()
+{
+    return glm::translate(glm::mat4(1.0f), glm::vec3(translate.x, translate.y, translate.z));
+}
 
-//     const PersProjInfo *perspective = new PersProjInfo(45.0f, (float)screen_width, (float)screen_height, zNear, zFar);
-//     Matrix4f persMat;
-//     persMat.InitPersProjTransform(*perspective);
+Matrix4f toMatrix4f(glm::mat4 glmMat)
+{
+    Matrix4f Mat;
+    int i, j;
+    for (i = 0; i < 4; i++)
+    {
+        for (j = 0; j < 4; j++)
+        {
+            Mat.m[i][j] = glmMat[i][j];
+        }
+    }
+    return Mat;
+}
 
-//     Matrix4f translateMat;
-//     translateMat.InitTranslationTransform(translate.x, translate.y, translate.z);
+glm::mat4 transform_()
+{
 
-//     Matrix4f scaleMat;
-//     scaleMat.InitScaleTransform(2.0, 2.0, 2.0);
+    glm::mat4 Projection = getPerspective();
+    glm::mat4 View = getLookAt();
+    glm::mat4 Model = getTranslation();
+    glm::mat4 Scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0));
+    return Projection * View * Model * Scale; // Remember, matrix multiplication is the other way around
+}
 
-//     Vector3f *target = new Vector3f(camera.x, camera.y, camera.z);
-//     Vector3f *up = new Vector3f(camera.up_x, camera.up_y, camera.up_z);
+Matrix4f transform()
+{
+    Matrix4f Projection;
+    glm::mat4 GlmPers = getPerspective();
+    Projection = toMatrix4f(GlmPers);
 
-//     Matrix4f cameraMat;
-//     cameraMat.InitCameraTransform(*target, *up);
+    glm::mat4 GlmView = getLookAt();
+    Matrix4f View = toMatrix4f(GlmView);
 
-//     GLenum errorCode = glGetError();
-//     if (errorCode == GL_NO_ERROR)
-//     {
-//     }
-//     else
-//     {
-//         fprintf(stderr, "OpenGL rendering error %d\n", errorCode);
-//     }
-//     return persMat * cameraMat * translateMat * scaleMat * rotationMat;
-// }
+    glm::mat4 GlmTrans = getTranslation();
+    Matrix4f translateMat;
+    translateMat = toMatrix4f(GlmTrans);
+
+    Matrix4f scaleMat;
+    scaleMat.InitScaleTransform(1.0, 1.0, 1.0);
+
+    Matrix4f Result;
+
+    Result = Projection.Transpose() * View.Transpose() * translateMat.Transpose();
+    return Result.Transpose();
+}
