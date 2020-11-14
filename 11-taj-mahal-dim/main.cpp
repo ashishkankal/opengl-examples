@@ -31,9 +31,9 @@ struct Camera
     float up_z;
     Camera()
     {
-        x = 0.59f;
-        y = -0.1f;
-        z = -7.59f;
+        x = 0.0f;
+        y = 0.0f;
+        z = -2.6f;
 
         up_x = 0.500007;
         up_y = 0.175135;
@@ -50,9 +50,9 @@ struct Translate
     float z;
     Translate()
     {
-        x = 0.0100001f;
-        y = -0.4f;
-        z = -6.6f;
+        x = 0.0f;
+        y = 0.0f;
+        z = -1.1f;
     }
     Translate(float _x, float _y, float _z)
     {
@@ -231,11 +231,11 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     }
     if (key == GLFW_KEY_O && action == GLFW_PRESS)
     {
-        fov += 0.10f;
+        fov += 15.0f;
     }
     if (key == GLFW_KEY_P && action == GLFW_PRESS)
     {
-        fov -= 0.10f;
+        fov -= 15.0f;
     }
 }
 

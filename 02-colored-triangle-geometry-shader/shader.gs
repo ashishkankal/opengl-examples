@@ -24,3 +24,5 @@ void main() {
 
     EndPrimitive();
 }
+
+https://github.com/kbinani/colormap-shaders

@@ -7,6 +7,22 @@ uniform mat4 MVP;
 
 void main(){
   gl_Position =  MVP * vec4(vertexPosition_modelspace,1);
-  fragmentColor = vertexColor;
+  if(gl_Position.x<=-0.2){
+  fragmentColor = vec3(1.0,0.64,0.0);
+  }
+  
+  if (gl_Position.x>-0.2 && gl_Position.x<0.0){
+    fragmentColor = vec3(1.0,1.0,1.0);
+  }
+  if (gl_Position.x==0.0){
+    fragmentColor = vec3(0.0,0.0,1.0);
+  }
+    if (gl_Position.x>0.0 && gl_Position.x<=0.2){
+    fragmentColor = vec3(1.0,1.0,1.0);
+  }
+  if(gl_Position.x>0.2){
+    fragmentColor = vec3(0.0,1.0,0.0);
+  }
+
 
 }

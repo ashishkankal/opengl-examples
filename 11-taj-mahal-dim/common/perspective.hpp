@@ -54,11 +54,20 @@ float findMod(float a, float b)
 
     return mod;
 }
-
+float radius = -0.5f;
 glm::mat4 getLookAt()
 {
-    glm::vec3 cameraPos(camera.x, camera.y, camera.z);
-    glm::vec3 cameraTarget(camera.up_x, camera.up_y, camera.up_z);
+    float cameraRadius = camera.z;
+
+    //float angle = findMod((loop_var * 0.5), 360); // 45° per second
+    float angle = 0.0f + rotateCo.y;
+
+    glm::vec3 cameraPos(cameraRadius * sin(angle) + camera.x, camera.y, cameraRadius * cos(angle));
+
+    // glm::vec3 cameraPos(camera.x, camera.y, camera.z);
+    //glm::vec3 cameraTarget(0, 0, 0);
+
+    glm::vec3 cameraTarget(-(cameraRadius * sin(angle) + camera.up_z * cos(angle)), 0, cameraRadius * cos(angle) + camera.up_z * sin(angle));
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
     //? Below Calculation is already done by look At
     //glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);// Camera Z Axis
@@ -70,12 +79,19 @@ glm::mat4 getLookAt()
 }
 glm::mat4 getPerspective()
 {
+
     return glm::perspective(glm::radians(fov), 1.0f * screen_width / screen_height, zNear, zFar);
 }
 
 glm::mat4 getTranslation()
 {
-    return glm::translate(glm::mat4(1.0f), glm::vec3(translate.x, translate.y, translate.z));
+    float cameraRadius = camera.z;
+    float angle = 0.0f + rotateCo.y;
+
+    //float angle = findMod((loop_var * 10), 360); // 45° per second
+    // float angle = 0.0f;
+    //glm::mat4 rotMat = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0, 1, 0));
+    return glm::translate(glm::mat4(1.0f), glm::vec3(-(cameraRadius * sin(angle) + camera.up_z * cos(angle)) + translate.x, -camera.up_y + translate.y, -camera.up_z + cameraRadius * cos(angle) + camera.up_z * sin(angle)));
 }
 
 Matrix4f toMatrix4f(glm::mat4 glmMat)
